@@ -1,6 +1,7 @@
 import { Agent } from '@mastra/core/agent';
 import { Memory } from "@mastra/memory";
-import { logsTool, runShellCommandTool } from '../tools/ops-tool';
+import { runShellCommandTool } from '../tools/ops-tool';
+import { Workspace } from '@mastra/core/workspace';
 
 const INVESTIGATOR_PROMPT = `
 You are a Helpdesk Agent responsible for troubleshooting issues on remote servers.
@@ -65,11 +66,31 @@ When resolving the issue, output:
 export const OpsAgent = new Agent({
     id: 'ops-agent',
     name: 'Ops Agent',
-    model: "google/gemini-2.5-flash",
+    model: 'google/gemini-3-flash-preview',
     memory: new Memory(),
     tools: {
         runShellCommandTool
     },
+    defaultOptions: {
+      maxSteps: 20,
+      providerOptions: {
+          google: {
+              thinkingConfig: {
+                  thinkingLevel: 'medium',
+                  includeThoughts: true,
+              }
+          }
+      }
+    },
+    workspace: new Workspace({
+        name: 'ops-agent',
+        bm25: true,
+        skills: ['skills'],
+        autoIndexPaths: ['/content'],
+        tools: {
+            requireApproval: false,
+        },
+    }),
     description: 'Agent responsible for troubleshooting issues on remote servers',
     instructions: INVESTIGATOR_PROMPT,
 });
