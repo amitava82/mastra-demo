@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import { createToolCallAccuracyScorerCode } from '@mastra/evals/scorers/code';
-import { createCompletenessScorer } from '@mastra/evals/scorers/code';
-import { createScorer } from '@mastra/core/scores';
+import { createToolCallAccuracyScorerCode, createCompletenessScorer } from '@mastra/evals/scorers/prebuilt';
+import { createScorer } from '@mastra/core/evals';
 
 export const toolCallAppropriatenessScorer = createToolCallAccuracyScorerCode({
   expectedTool: 'weatherTool',
@@ -12,6 +11,7 @@ export const completenessScorer = createCompletenessScorer();
 
 // Custom LLM-judged scorer: evaluates if non-English locations are translated appropriately
 export const translationScorer = createScorer({
+  id: 'translation-quality',
   name: 'Translation Quality',
   description:
     'Checks that non-English location names are translated and used correctly',
@@ -26,8 +26,15 @@ export const translationScorer = createScorer({
   },
 })
   .preprocess(({ run }) => {
-    const userText = (run.input?.inputMessages?.[0]?.content as string) || '';
-    const assistantText = (run.output?.[0]?.content as string) || '';
+    const userMessageContent = run.input?.inputMessages?.[0]?.content;
+    const assistantMessageContent = run.output?.[0]?.content;
+    
+    const userText = typeof userMessageContent === 'string' ? userMessageContent : 
+      (Array.isArray(userMessageContent) ? userMessageContent.find(c => c.type === 'text')?.text || '' : '');
+      
+    const assistantText = typeof assistantMessageContent === 'string' ? assistantMessageContent : 
+      (Array.isArray(assistantMessageContent) ? assistantMessageContent.find(c => c.type === 'text')?.text || '' : '');
+      
     return { userText, assistantText };
   })
   .analyze({

@@ -13,6 +13,7 @@ export const mastra = new Mastra({
   agents: { weatherAgent, OpsAgent },
   scorers: { toolCallAppropriatenessScorer, completenessScorer, translationScorer },
   storage: new LibSQLStore({
+    id: 'mastra-store',
     // stores observability, scores, ... into memory storage, if it needs to persist, change to file:../mastra.db
     url: ":memory:",
   }),
@@ -20,12 +21,4 @@ export const mastra = new Mastra({
     name: 'Mastra',
     level: 'debug',
   }),
-  telemetry: {
-    // Telemetry is deprecated and will be removed in the Nov 4th release
-    enabled: false, 
-  },
-  observability: {
-    // Enables DefaultExporter and CloudExporter for AI tracing
-    default: { enabled: true }, 
-  },
 });
