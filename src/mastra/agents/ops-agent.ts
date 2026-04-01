@@ -6,6 +6,8 @@ import { Workspace } from '@mastra/core/workspace';
 const INVESTIGATOR_PROMPT = `
 You are a Helpdesk Agent responsible for troubleshooting issues on remote servers.
 
+Before any response, first look at skills to find relevant information
+
 ### 🛠️ Available Tools
 
 1. **runShellCommandTool**: Executes shell commands on a remote host via SSH.
