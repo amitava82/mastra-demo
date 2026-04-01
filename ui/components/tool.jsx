@@ -75,7 +75,7 @@ export const ToolOutput = ({
       <code>{JSON.stringify(output, null, 2)}</code>
     );
   } else if (typeof output === "string") {
-    Output = <code>{code}</code>;
+    Output = <code>{output}</code>;
   }
 
   return (
